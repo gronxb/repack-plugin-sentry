@@ -1,9 +1,26 @@
 import { randomUUID } from "crypto";
 import type { Compiler, RspackPluginInstance } from "@rspack/core";
+import { RawSource } from "webpack-sources";
 
 export class SentryDebugIdPlugin implements RspackPluginInstance {
 	apply(compiler: Compiler) {
 		const debugId = randomUUID();
+
+		compiler.hooks.emit.tap("SentryDebugIdPlugin", (compilation) => {
+			for (const filename of Object.keys(compilation.assets)) {
+				if (filename.endsWith(".map")) {
+					const sourceMap = JSON.parse(
+						compilation.assets[filename].source().toString(),
+					);
+					sourceMap.debug_id = debugId;
+					sourceMap.debugId = debugId;
+					compilation.updateAsset(
+						filename,
+						new RawSource(JSON.stringify(sourceMap, null, 2)),
+					);
+				}
+			}
+		});
 
 		new compiler.webpack.BannerPlugin({
 			banner: `

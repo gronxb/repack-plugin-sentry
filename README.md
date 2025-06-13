@@ -30,7 +30,7 @@ pnpm add --save-dev repack-plugin-sentry
 
 ### Basic Usage
 
-Add the plugin to your `webpack.config.js` or Repack configuration:
+Add the plugin to your `rspack.config.js` or Repack configuration:
 
 ```typescript
 import { SentryDebugIdPlugin } from "repack-plugin-sentry";

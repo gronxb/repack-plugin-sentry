@@ -43,19 +43,6 @@ export default {
 };
 ```
 
-### With Custom Configuration
-
-```typescript
-import { SentryDebugIdPlugin } from "repack-plugin-sentry";
-
-export default {
-  plugins: [
-    new SentryDebugIdPlugin({
-      // Plugin options (if any)
-    }),
-  ],
-};
-```
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

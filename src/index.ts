@@ -25,7 +25,7 @@ try {
 		}).apply(compiler);
 
 		new compiler.webpack.BannerPlugin({
-			banner: "//# debugId=${debugId}",
+			banner: `//# debugId=${debugId}\n`,
 			raw: true,
 			footer: true,
 		}).apply(compiler);

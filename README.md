@@ -43,6 +43,22 @@ export default {
 };
 ```
 
+### Why use this plugin?
+
+When using standard Metro bundler, you would typically configure Sentry using the official Metro plugin:
+
+```javascript
+const { getDefaultConfig } = require("@react-native/metro-config");
+const { withSentryConfig } = require("@sentry/react-native/metro");
+
+const config = getDefaultConfig(__dirname);
+module.exports = withSentryConfig(config);
+```
+
+However, when using Re.Pack as your bundler instead of Metro, the official Sentry Metro plugin is not available. This plugin provides the same functionality for Re.Pack users, automatically injecting debug IDs into your JavaScript bundles to enable proper source map tracking and error monitoring.
+
+For more information about the official Metro setup, see the [Sentry documentation](https://docs.sentry.io/platforms/react-native/manual-setup/metro/#use-the-sentry-metro-plugin).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

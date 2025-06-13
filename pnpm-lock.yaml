@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       uuid:
-        specifier: ^11.1.0
+        specifier: 11.1.0
         version: 11.1.0
     devDependencies:
       '@biomejs/biome':

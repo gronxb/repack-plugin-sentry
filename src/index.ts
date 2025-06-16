@@ -1,9 +1,12 @@
-import {
-	Compilation,
-	type Compiler,
-	type RspackPluginInstance,
-} from "@rspack/core";
+import * as fs from "fs";
+import * as path from "path";
+import type { Compilation, Compiler, RspackPluginInstance } from "@rspack/core";
 import { v4 as uuidv4 } from "uuid";
+
+interface AssetEmittedInfo {
+	content: Buffer | string;
+	sourceFilename?: string;
+}
 
 const createDebugIdBanner = (debugId: string) => `
 var _sentryDebugIds, _sentryDebugIdIdentifier;
@@ -38,40 +41,31 @@ export class SentryDebugIdPlugin implements RspackPluginInstance {
 			footer: true,
 		}).apply(compiler);
 
-		compiler.hooks.thisCompilation.tap(
+		compiler.hooks.assetEmitted.tap(
 			"AddDebugIdAfterSourceMapPlugin",
-			(compilation) => {
-				compilation.hooks.processAssets.tap(
-					{
-						name: "AddDebugIdAfterSourceMapPlugin",
-						stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
-					},
-					(assets) => {
-						for (const assetName of Object.keys(assets)) {
-							if (!assetName.endsWith(".map")) continue;
+			(file: string, info: AssetEmittedInfo) => {
+				if (!file.endsWith(".map")) return;
 
-							const asset = compilation.getAsset(assetName);
-							const source = asset?.source.source();
+				const source = info.content;
+				if (!source) {
+					return;
+				}
 
-							if (!source) {
-								continue;
-							}
-							try {
-								const mapJson = JSON.parse(source.toString());
-								mapJson.debug_id = debugId;
-								mapJson.debugId = debugId;
-								const updatedSource = JSON.stringify(mapJson);
-								compilation.updateAsset(
-									assetName,
-									new compiler.webpack.sources.RawSource(updatedSource),
-								);
-								console.log(`[debug_id] added to: ${assetName}`);
-							} catch (e) {
-								console.warn(`[debug_id] Failed to parse ${assetName} as JSON`);
-							}
-						}
-					},
-				);
+				if (!compiler.options.output.path) {
+					return;
+				}
+
+				try {
+					const mapJson = JSON.parse(source.toString());
+					mapJson.debug_id = debugId;
+					mapJson.debugId = debugId;
+					const updatedSource = JSON.stringify(mapJson);
+
+					const outputPath = path.join(compiler.options.output.path, file);
+					fs.writeFileSync(outputPath, updatedSource);
+				} catch {
+					throw new Error(`Failed to parse ${file} as JSON`);
+				}
 			},
 		);
 	}

@@ -32,7 +32,8 @@
 		"vitest": "^3.2.3"
 	},
 	"peerDependencies": {
-		"@callstack/repack": "*"
+		"@callstack/repack": "*",
+		"@rspack/core": "*"
 	},
 	"packageManager": "pnpm@10.12.1",
 	"dependencies": {
